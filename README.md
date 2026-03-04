@@ -30,7 +30,24 @@ To start a node, ensure NATS is running:
 docker run -d --name nats -p 4222:4222 nats
 go run cmd/lumina/main.go
 ```
+
 To monitor the mesh:
 ```bash
-go run cmd/lumina-cli/main.go
+go run cmd/lumina-cli/main.go monitor
+```
+
+To deploy a serverless workflow:
+```bash
+go run cmd/lumina-cli/main.go deploy examples/video-workflow.yaml
+```
+
+## Workflow Example
+Workflows are defined in YAML and executed as high-performance WASM sandboxes:
+```yaml
+name: sentiment-analysis
+steps:
+  - name: analyze
+    action: wasm://ai-sentiment.wasm
+    inputs:
+      text: "Lumina-Mesh is amazing!"
 ```

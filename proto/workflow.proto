@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package lumina.api;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/erciktiburak/Lumina-Mesh/pkg/api;api";
+
+service WorkflowService {
+  rpc TriggerWorkflow(TriggerRequest) returns (TriggerResponse);
+  rpc GetWorkflowStatus(StatusRequest) returns (StatusResponse);
+}
+
+message TriggerRequest {
+  string workflow_id = 1;
+  google.protobuf.Struct inputs = 2;
+}
+
+message TriggerResponse {
+  string execution_id = 1;
+  string status = 2;
+}
+
+message StatusRequest {
+  string execution_id = 1;
+}
+
+message StatusResponse {
+  string status = 2;
+  google.protobuf.Struct outputs = 3;
+}

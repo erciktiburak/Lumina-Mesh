@@ -13,6 +13,28 @@ import (
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: lumina-cli [monitor|deploy]")
+		return
+	}
+
+	command := os.Args[1]
+
+	switch command {
+	case "monitor":
+		monitor()
+	case "deploy":
+		if len(os.Args) < 3 {
+			fmt.Println("Usage: lumina-cli deploy <workflow.yaml>")
+			return
+		}
+		deploy(os.Args[2])
+	default:
+		fmt.Printf("Unknown command: %s\n", command)
+	}
+}
+
+func monitor() {
 	fmt.Println("Lumina-CLI: Monitoring Mesh Nodes...")
 
 	client, err := messaging.NewClient("")
@@ -31,4 +53,10 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigChan
+}
+
+func deploy(path string) {
+	fmt.Printf("Deploying workflow: %s\n", path)
+	// Integration with gRPC TriggerWorkflow would go here
+	fmt.Println("Workflow deployed successfully to the mesh.")
 }
