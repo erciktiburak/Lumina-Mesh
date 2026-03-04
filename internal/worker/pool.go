@@ -15,13 +15,16 @@ type Pool struct {
 	tasks       chan Task
 	workerCount int
 	wg          sync.WaitGroup
+	Processor   func(workerID int, t Task)
 }
 
 func NewPool(workerCount int, bufferSize int) *Pool {
-	return &Pool{
+	p := &Pool{
 		tasks:       make(chan Task, bufferSize),
 		workerCount: workerCount,
 	}
+	p.Processor = p.defaultProcess
+	return p
 }
 
 func (p *Pool) Start(ctx context.Context) {
@@ -52,12 +55,12 @@ func (p *Pool) worker(ctx context.Context, id int) {
 			if !ok {
 				return
 			}
-			p.process(id, task)
+			p.Processor(id, task)
 		}
 	}
 }
 
-func (p *Pool) process(workerID int, t Task) {
+func (p *Pool) defaultProcess(workerID int, t Task) {
 	log.Printf("[Worker-%d] Processing task %s", workerID, t.ID)
 	// Simulate processing time
 }

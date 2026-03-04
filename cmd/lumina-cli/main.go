@@ -22,8 +22,7 @@ func main() {
 	defer client.Close()
 
 	_, err = client.Subscribe(discovery.DiscoverySubject, func(msg *nats.Msg) {
-		fmt.Printf("Node update received: %s
-", string(msg.Data))
+		fmt.Printf("Node update received: %s\n", string(msg.Data))
 	})
 	if err != nil {
 		log.Fatalf("Failed to subscribe to discovery: %v", err)
