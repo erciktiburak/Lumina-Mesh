@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package lumina.core;
+
+option go_package = "github.com/erciktiburak/Lumina-Mesh/pkg/pb;pb";
+
+enum MessageType {
+  UNKNOWN = 0;
+  TASK_REQUEST = 1;
+  TASK_RESPONSE = 2;
+  HEARTBEAT = 3;
+}
+
+message MeshMessage {
+  string id = 1;
+  MessageType type = 2;
+  string sender_node_id = 3;
+  string target_node_id = 4;
+  int64 timestamp = 5;
+  bytes payload = 6;
+}
