@@ -16,15 +16,20 @@ type ExecutionContext struct {
 
 type Executor struct {
 	wasmRuntime *runtime.WasmRuntime
+	DryRun      bool
 }
 
 func NewExecutor() *Executor {
 	return &Executor{
 		wasmRuntime: runtime.NewWasmRuntime(),
+		DryRun:      false,
 	}
 }
 
 func (e *Executor) Run(ctx context.Context, workflow *Workflow) error {
+	if e.DryRun {
+		log.Printf("[Executor] Dry Run mode enabled. Validating workflow %s...", workflow.Name)
+	}
 	execCtx := &ExecutionContext{
 		Outputs: make(map[string]map[string]interface{}),
 	}
@@ -53,6 +58,10 @@ func (e *Executor) Run(ctx context.Context, workflow *Workflow) error {
 }
 
 func (e *Executor) executeStep(ctx context.Context, step Step, execCtx *ExecutionContext) (map[string]interface{}, error) {
+	if e.DryRun {
+		log.Printf("[Executor] [DryRun] Validating step: %s", step.Name)
+		return map[string]interface{}{"status": "validated"}, nil
+	}
 	// Simple simulation of step execution
 	// In reality, we'd check action type: wasm://, ai://, etc.
 	return e.wasmRuntime.Execute(step.Action, step.Inputs)
