@@ -8,15 +8,16 @@ import (
 )
 
 func TestPool(t *testing.T) {
-	pool := NewPool(3, 10)
+	pool := NewPool(3, 10, nil)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	processedCount := int32(0)
 
 	// Mock processing
-	pool.Processor = func(workerID int, task Task) {
+	pool.Processor = func(workerID int, task Task) error {
 		atomic.AddInt32(&processedCount, 1)
+		return nil
 	}
 
 	pool.Start(ctx)

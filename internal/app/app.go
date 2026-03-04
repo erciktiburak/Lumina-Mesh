@@ -31,7 +31,7 @@ func (a *App) Run() error {
 	defer a.msgClient.Close()
 
 	// Initialize and start worker pool
-	a.pool = worker.NewPool(5, 100)
+	a.pool = worker.NewPool(5, 100, a.msgClient)
 	a.pool.Start(context.Background())
 	defer a.pool.Stop()
 
