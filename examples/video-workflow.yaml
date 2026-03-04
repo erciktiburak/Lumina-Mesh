@@ -1,0 +1,23 @@
+name: video-sentiment-analysis
+version: 1.0.0
+steps:
+  - name: process-video
+    action: wasm://video-processor.wasm
+    inputs:
+      src: s3://input-bucket/video.mp4
+    outputs:
+      metadata: video_metadata
+
+  - name: analyze-sentiment
+    action: ai://onnx-sentiment-model
+    condition: ${steps.process-video.status == 'success'}
+    inputs:
+      text: ${steps.process-video.outputs.transcript}
+    outputs:
+      score: sentiment_score
+
+  - name: notify-slack
+    action: wasm://slack-notifier.wasm
+    inputs:
+      token: ${env.SLACK_TOKEN}
+      message: "Sentiment analysis complete! Score: ${steps.analyze-sentiment.outputs.score}"
