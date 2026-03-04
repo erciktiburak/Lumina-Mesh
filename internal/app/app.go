@@ -6,11 +6,13 @@ import (
 
 	"github.com/erciktiburak/Lumina-Mesh/internal/discovery"
 	"github.com/erciktiburak/Lumina-Mesh/internal/messaging"
+	"github.com/erciktiburak/Lumina-Mesh/internal/worker"
 )
 
 type App struct {
 	msgClient *messaging.Client
 	discovery *discovery.DiscoveryService
+	pool      *worker.Pool
 }
 
 func New() *App {
@@ -27,6 +29,11 @@ func (a *App) Run() error {
 	}
 	a.msgClient = client
 	defer a.msgClient.Close()
+
+	// Initialize and start worker pool
+	a.pool = worker.NewPool(5, 100)
+	a.pool.Start(context.Background())
+	defer a.pool.Stop()
 
 	// Initialize discovery service
 	a.discovery = discovery.NewDiscoveryService(a.msgClient, "node-1")
